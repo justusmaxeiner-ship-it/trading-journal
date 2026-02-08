@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trading Journal</title>
+</head>
+<body>
+
+<h1>🚀 Mein Trading Journal</h1>
+
+<input id="symbol" placeholder="Symbol (z.B. BTC)">
+<input id="pnl" placeholder="PnL">
+<button onclick="addTrade()">Trade speichern</button>
+
+<h2>Trades:</h2>
+<ul id="trades"></ul>
+
+<script>
+async function addTrade() {
+
+    const symbol = document.getElementById("symbol").value;
+    const pnl = document.getElementById("pnl").value;
+
+    await fetch("/api/trades", {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({symbol, pnl})
+    });
+
+    loadTrades();
+}
+
+async function loadTrades(){
+    const res = await fetch("/api/trades");
+    const trades = await res.json();
+
+    const list = document.getElementById("trades");
+    list.innerHTML = "";
+
+    trades.forEach(t=>{
+        const li = document.createElement("li");
+        li.innerText = t.symbol + " | PnL: " + t.pnl;
+        list.appendChild(li);
+    });
+}
+
+loadTrades();
+</script>
+
+</body>
+</html>
